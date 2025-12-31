@@ -1,23 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Family Tree</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
 
-<h2>🌳 Family Tree (Click + to Expand)</h2>
+<h2>🌳 Family Tree</h2>
 
 <div id="tree"></div>
 
 <div id="editor">
   <h3>Edit Person</h3>
-  <input id="name" placeholder="Name" />
-  <input id="dob" placeholder="DOB" />
-  <input id="relation" placeholder="Relation" />
+
+  <input id="name" placeholder="Name">
+  <input id="dob" placeholder="DOB">
+  
+  <select id="relation">
+    <option value="">Relation</option>
+    <option>Father</option>
+    <option>Mother</option>
+    <option>Son</option>
+    <option>Daughter</option>
+    <option>Brother</option>
+    <option>Sister</option>
+    <option>Tau</option>
+    <option>Chacha</option>
+    <option>Bua</option>
+    <option>Mama</option>
+    <option>Maasi</option>
+  </select>
+
+  <input id="photo" placeholder="Photo URL">
   <button onclick="saveNode()">Save</button>
+
+  <hr>
+
+  <button onclick="exportData()">Export JSON</button>
+  <input type="file" onchange="importData(event)">
 </div>
 
 <script src="script.js"></script>
