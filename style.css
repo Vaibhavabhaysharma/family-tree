@@ -1,0 +1,22 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+#tree {
+  width: 100%;
+  height: 600px;
+  border: 1px solid #ccc;
+}
+
+.node rect {
+  fill: #e3f2fd;
+  stroke: #333;
+}
+
+.node text {
+  font-size: 12px;
+}
+
+#editor {
+  margin-top: 10px;
+}
