@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Family Tree</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+<h2>🌳 Family Tree (Click + to Expand)</h2>
+
+<div id="tree"></div>
+
+<div id="editor">
+  <h3>Edit Person</h3>
+  <input id="name" placeholder="Name" />
+  <input id="dob" placeholder="DOB" />
+  <input id="relation" placeholder="Relation" />
+  <button onclick="saveNode()">Save</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
