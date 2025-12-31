@@ -1,25 +1,39 @@
-let data = JSON.parse(localStorage.getItem("familyTree")) 
-          || await fetch("data.json").then(r => r.json());
-
-const width = 1200, height = 600;
-
-const svg = d3.select("#tree")
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .call(d3.zoom().on("zoom", e => svg.attr("transform", e.transform)))
-  .append("g");
+const width = 1400;
+const height = 650;
 
 let selectedNode = null;
 
+let data = JSON.parse(localStorage.getItem("familyTree"));
+
+if (!data) {
+  fetch("data.json")
+    .then(res => res.json())
+    .then(json => {
+      data = json;
+      save();
+    });
+}
+
+const svgRoot = d3.select("#tree")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+const g = svgRoot.append("g");
+
+svgRoot.call(
+  d3.zoom().on("zoom", (event) => {
+    g.attr("transform", event.transform);
+  })
+);
+
 function update() {
-  svg.selectAll("*").remove();
+  g.selectAll("*").remove();
 
   const root = d3.hierarchy(data);
-  const treeLayout = d3.tree().size([width - 200, height - 200]);
-  treeLayout(root);
+  d3.tree().size([width - 200, height - 200])(root);
 
-  svg.selectAll("line")
+  g.selectAll("line")
     .data(root.links())
     .enter()
     .append("line")
@@ -29,42 +43,59 @@ function update() {
     .attr("y2", d => d.target.y)
     .attr("stroke", "#555");
 
-  const node = svg.selectAll(".node")
+  const node = g.selectAll(".node")
     .data(root.descendants())
     .enter()
     .append("g")
     .attr("class", "node")
-    .attr("transform", d => `translate(${d.x},${d.y})`)
-    .on("click", (e, d) => selectNode(d.data));
+    .attr("transform", d => `translate(${d.x - 60},${d.y - 30})`)
+    .on("click", (e, d) => {
+      e.stopPropagation();
+      selectNode(d.data);
+    });
 
   node.append("rect")
-    .attr("width", 120)
-    .attr("height", 50)
-    .attr("rx", 8);
+    .attr("width", 140)
+    .attr("height", 60);
+
+  node.append("image")
+    .attr("href", d => d.data.photo || "images/default.png")
+    .attr("x", 5)
+    .attr("y", 5)
+    .attr("width", 40)
+    .attr("height", 40);
 
   node.append("text")
-    .attr("x", 10)
-    .attr("y", 20)
+    .attr("x", 50)
+    .attr("y", 22)
     .text(d => d.data.name);
 
   node.append("text")
-    .attr("x", 100)
-    .attr("y", 20)
+    .attr("x", 120)
+    .attr("y", 22)
     .text("+")
     .style("cursor", "pointer")
     .on("click", (e, d) => {
       e.stopPropagation();
       d.data.children = d.data.children || [];
-      d.data.children.push({ name: "New Person", relation: "", children: [] });
+      d.data.children.push({
+        id: crypto.randomUUID(),
+        name: "New Person",
+        relation: "",
+        dob: "",
+        photo: "images/default.png",
+        children: []
+      });
       save();
     });
 }
 
 function selectNode(node) {
   selectedNode = node;
-  document.getElementById("name").value = node.name || "";
-  document.getElementById("dob").value = node.dob || "";
-  document.getElementById("relation").value = node.relation || "";
+  name.value = node.name || "";
+  dob.value = node.dob || "";
+  relation.value = node.relation || "";
+  photo.value = node.photo || "";
 }
 
 function saveNode() {
@@ -72,6 +103,7 @@ function saveNode() {
   selectedNode.name = name.value;
   selectedNode.dob = dob.value;
   selectedNode.relation = relation.value;
+  selectedNode.photo = photo.value || "images/default.png";
   save();
 }
 
@@ -80,4 +112,23 @@ function save() {
   update();
 }
 
-update();
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "family-tree.json";
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    data = JSON.parse(reader.result);
+    save();
+  };
+  reader.readAsText(file);
+}
+
+setTimeout(update, 300);
