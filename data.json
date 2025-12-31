@@ -1,0 +1,17 @@
+{
+  "name": "You",
+  "dob": "",
+  "relation": "Self",
+  "children": [
+    {
+      "name": "Father",
+      "relation": "Father",
+      "children": []
+    },
+    {
+      "name": "Mother",
+      "relation": "Mother",
+      "children": []
+    }
+  ]
+}
